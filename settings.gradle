@@ -8,3 +8,5 @@
  */
 
 rootProject.name = 'job4j_fullstack'
+include 'notification'
+
