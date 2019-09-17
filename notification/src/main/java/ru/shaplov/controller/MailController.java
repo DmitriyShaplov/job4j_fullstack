@@ -1,9 +1,13 @@
 package ru.shaplov.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import ru.shaplov.domain.Notification;
-import ru.shaplov.service.MailService;
+import ru.shaplov.service.ReadMail;
 
 import java.util.List;
 
@@ -13,20 +17,28 @@ import java.util.List;
  */
 @RestController
 public class MailController {
-    private final MailService service;
+
+    private final JavaMailSender sender;
+    private final ReadMail reader;
 
     @Autowired
-    public MailController(MailService service) {
-        this.service = service;
+    public MailController(JavaMailSender sender, ReadMail reader) {
+        this.sender = sender;
+        this.reader = reader;
     }
 
     @GetMapping("/inbox")
     public List<Notification> receiveMail() {
-        return service.receiveMessage();
+        return reader.receiveMessage();
     }
 
     @PostMapping(value = "/send", consumes = "application/json")
-    public void sendMail(@RequestBody Notification notification) {
-        service.sendMessage(notification);
+    public ResponseEntity sendMail(@RequestBody Notification notification) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(notification.getTo());
+        message.setSubject(notification.getSubject());
+        message.setText(notification.getBody());
+        sender.send(message);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
