@@ -9,4 +9,6 @@
 
 rootProject.name = 'job4j_fullstack'
 include 'notification'
+include 'shop'
+include 'payment'
 

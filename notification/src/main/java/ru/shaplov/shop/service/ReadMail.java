@@ -1,6 +1,6 @@
-package ru.shaplov.service;
+package ru.shaplov.shop.service;
 
-import ru.shaplov.domain.Notification;
+import ru.shaplov.shop.domain.Notification;
 
 import java.util.List;
 

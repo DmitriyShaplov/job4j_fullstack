@@ -1,4 +1,4 @@
-package ru.shaplov.domain;
+package ru.shaplov.shop.domain;
 
 import java.util.Objects;
 

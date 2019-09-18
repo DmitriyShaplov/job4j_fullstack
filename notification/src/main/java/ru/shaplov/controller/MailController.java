@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
-import ru.shaplov.domain.Notification;
-import ru.shaplov.service.ReadMail;
+import ru.shaplov.shop.domain.Notification;
+import ru.shaplov.shop.service.ReadMail;
 
 import java.util.List;
 
