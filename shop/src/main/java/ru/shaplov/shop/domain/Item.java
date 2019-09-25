@@ -1,13 +1,11 @@
 package ru.shaplov.shop.domain;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 /**
  * @author shaplov
  * @since 18.09.2019
  */
-@XmlRootElement
 public class Item {
     private int id;
     private String name;

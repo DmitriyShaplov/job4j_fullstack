@@ -1,0 +1,37 @@
+plugins {
+    id 'application'
+    id "org.liquibase.gradle" version "2.0.1"
+}
+
+application {
+    mainClassName = 'ru.shaplov.rmi.example.RMIServer'
+}
+
+task rmiregistry(type:Exec) {
+    commandLine 'rmiregistry', '-J-Djava.class.path=D:\\projects\\job4j_fullstack\\rmi_example\\build\\libs\\rmi_example-1.0.jar'
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = {
+        return standardOutput.toString()
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'src/main/resources/master.sql'
+            url 'jdbc:postgresql://127.0.0.1:5433/fullstack'
+            username 'postgres'
+            password '123456'
+        }
+    }
+}
+
+dependencies {
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.5.Final'
+//    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+//    compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+//    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
+//    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '3.8.0'
+}
