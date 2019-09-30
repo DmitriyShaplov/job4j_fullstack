@@ -3,7 +3,6 @@ package ru.shaplov.chat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -19,7 +18,7 @@ public class ChatServerImpl implements ChatServer {
     private List<ChatClient> clients = new LinkedList<>();
 
     @Override
-    public synchronized void register(ChatClient chatClient) throws RemoteException {
+    public synchronized void register(ChatClient chatClient) {
         try {
             clients.add(chatClient);
             String msg = "User - " + chatClient.getName() + " connected.";
@@ -31,7 +30,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public synchronized void publish(String msg) throws RemoteException {
+    public synchronized void publish(String msg) {
         LOG.info(msg);
         ListIterator<ChatClient> listIterator = clients.listIterator();
         while (listIterator.hasNext()) {

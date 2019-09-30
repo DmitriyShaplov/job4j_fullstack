@@ -1,5 +1,8 @@
 package ru.shaplov.chat;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 /**
  * Server side chat interface.
  *

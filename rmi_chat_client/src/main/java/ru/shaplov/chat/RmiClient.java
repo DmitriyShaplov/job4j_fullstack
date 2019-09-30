@@ -1,18 +1,30 @@
 package ru.shaplov.chat;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.remoting.rmi.RmiProxyFactoryBean;
+
 import java.util.Scanner;
 
 /**
  * @author shaplov
- * @since 26.09.2019
+ * @since 30.09.2019
  */
-public class StartClient {
+@SpringBootApplication
+public class RmiClient {
 
-    private void start() throws Exception {
-        Registry registry = LocateRegistry.getRegistry();
-        ChatServer server = (ChatServer) registry.lookup("ChatServer");
+    @Bean
+    RmiProxyFactoryBean service() {
+        RmiProxyFactoryBean rmiProxyFactoryBean = new RmiProxyFactoryBean();
+        rmiProxyFactoryBean.setServiceUrl("rmi://localhost:1099/ChatServer");
+        rmiProxyFactoryBean.setServiceInterface(ChatServer.class);
+        return rmiProxyFactoryBean;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ChatServer server = SpringApplication.run(RmiClient.class, args)
+                .getBean(ChatServer.class);
         Scanner scanner = new Scanner(System.in);
         System.out.print("Please enter a name: ");
         String name = scanner.next();
@@ -34,9 +46,5 @@ public class StartClient {
                 }
             }
         }).start();
-    }
-
-    public static void main(String[] args) throws Exception {
-        new StartClient().start();
     }
 }
