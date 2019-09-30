@@ -1,0 +1,4 @@
+bootJar {
+    archivesBaseName = 'auth_job4j'
+    archiveVersion =  '1.0'
+}
