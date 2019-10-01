@@ -15,4 +15,5 @@ include 'rmi_example'
 include 'rmi_chat_server'
 include 'rmi_chat_client'
 include 'auth'
+include 'auth_client'
 
