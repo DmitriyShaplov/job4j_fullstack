@@ -3,13 +3,12 @@ package ru.shaplov.auth.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.shaplov.auth.domain.Person;
-import ru.shaplov.auth.repository.PersonRepository;
+import ru.shaplov.auth.service.PersonService;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * @author shaplov
@@ -18,23 +17,23 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/person")
 public class PersonController {
-    private final PersonRepository persons;
+    private final PersonService personService;
 
     @Autowired
-    public PersonController(PersonRepository persons) {
-        this.persons = persons;
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Person> findAll() {
-        return StreamSupport.stream(
-                persons.findAll().spliterator(), false
-        ).collect(Collectors.toList());
+        return personService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Person> findById(@PathVariable int id) {
-        var person = persons.findById(id);
+    @GetMapping("/{login}")
+    @PreAuthorize("#login == principal.username or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Person> findByLogin(@PathVariable String login) {
+        var person = personService.findByLogin(login);
         return new ResponseEntity<>(
                 person.orElse(new Person()),
                 person.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
@@ -45,25 +44,25 @@ public class PersonController {
     public ResponseEntity<Person> create(@RequestBody Person person) {
         return person.getId() != 0 ? ResponseEntity.badRequest().build()
             : new ResponseEntity<>(
-                persons.save(person),
+                personService.save(person),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/")
+    @PreAuthorize("#person.login == principal.username or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> update(@RequestBody Person person) {
-        if (persons.findById(person.getId()).isEmpty()) {
+        if (personService.findByLogin(person.getLogin()).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        persons.save(person);
+        personService.save(person);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        Person person = new Person();
-        person.setId(id);
-        this.persons.delete(person);
+    @DeleteMapping("{login}")
+    @PreAuthorize("#login == principal.username or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable String login) {
+        this.personService.delete(login);
         return ResponseEntity.ok().build();
     }
 }

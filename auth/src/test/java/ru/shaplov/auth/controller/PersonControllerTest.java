@@ -8,10 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.shaplov.auth.domain.Person;
-import ru.shaplov.auth.repository.PersonRepository;
+import ru.shaplov.auth.service.PersonService;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,11 +33,12 @@ public class PersonControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private PersonRepository persons;
+    private PersonService persons;
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void whenGetPersonsList() throws Exception {
         Person person = new Person();
         person.setId(1);
@@ -57,15 +59,16 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenGetPersonById() throws Exception {
         Person person = new Person();
         person.setId(1);
         person.setLogin("login");
         person.setPassword("password");
         given(
-                persons.findById(1)
+                persons.findByLogin("login")
         ).willReturn(Optional.of(person));
-        mvc.perform(get("/person/1"))
+        mvc.perform(get("/person/login"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         mapper.writeValueAsString(person)
@@ -73,7 +76,7 @@ public class PersonControllerTest {
                 );
         verify(
                 persons, times(1)
-        ).findById(1);
+        ).findByLogin("login");
     }
 
     @Test
@@ -119,16 +122,15 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenUpdatePerson() throws Exception {
         Person person = new Person();
         person.setId(10);
-        Person result = new Person();
-        result.setId(10);
-        result.setLogin("login");
-        result.setPassword("password");
+        person.setLogin("login");
+        person.setPassword("password");
         String requestData = mapper.writeValueAsString(person);
         given(
-                persons.findById(10)
+                persons.findByLogin("login")
         ).willReturn(Optional.of(person));
         mvc.perform(put("/person/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -140,12 +142,11 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void whenUpdatePersonWithWrongId() throws Exception {
         Person person = new Person();
+        person.setLogin("login");
         String requestData = mapper.writeValueAsString(person);
-        given(
-                persons.findById(10)
-        ).willReturn(Optional.of(person));
         mvc.perform(put("/person/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestData))
@@ -153,14 +154,13 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenDeletePerson() throws Exception {
-        Person person = new Person();
-        person.setId(10);
         mvc.perform(
-                delete("/person/10")
+                delete("/person/login")
         ).andExpect(status().isOk());
         verify(
                 persons, times(1)
-        ).delete(person);
+        ).delete("login");
     }
 }

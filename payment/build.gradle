@@ -1,15 +1,8 @@
 plugins {
     id "de.undercouch.download" version "1.2"
-    id "com.github.bjornvester.wsdl2java" version "0.2"
 }
 
 import de.undercouch.gradle.tasks.download.Download
-
-task downloadWsdl(type: Download) {
-    description "Dowsnload WSDL"
-    src 'http://localhost:7779/ws/shop?wsdl'
-    dest 'src/main/resources/shop.wsdl'
-}
 
 dependencies {
     compile group: 'javax.jws', name: 'javax.jws-api', version: '1.1'
