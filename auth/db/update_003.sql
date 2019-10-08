@@ -1,0 +1,1 @@
+alter table Person add column token varchar(255);

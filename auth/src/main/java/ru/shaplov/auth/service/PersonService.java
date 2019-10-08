@@ -1,5 +1,6 @@
 package ru.shaplov.auth.service;
 
+import org.springframework.security.core.userdetails.User;
 import ru.shaplov.auth.domain.Person;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface PersonService {
     Optional<Person> findByLogin(String login);
     Person save(Person person);
     void delete(String login);
+    String login(String login, String password);
+    Optional<User> findByToken(String token);
 }
