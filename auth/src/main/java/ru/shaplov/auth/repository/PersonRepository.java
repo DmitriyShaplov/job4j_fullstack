@@ -12,6 +12,4 @@ import java.util.Optional;
 public interface PersonRepository extends JpaRepository<Person, Integer> {
     Optional<Person> findByLogin(String login);
     void deleteByLogin(String login);
-    Optional<Person> findByLoginAndPassword(String login, String password);
-    Optional<Person> findByToken(String token);
 }

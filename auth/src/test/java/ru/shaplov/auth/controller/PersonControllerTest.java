@@ -7,15 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.shaplov.auth.domain.Person;
-import ru.shaplov.auth.security.AuthenticationProvider;
 import ru.shaplov.auth.service.PersonService;
 
 import java.util.List;
@@ -29,11 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = {PersonController.class, PersonSaveController.class},
-        includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {
-                        AuthenticationProvider.class
-                }))
+@WebMvcTest(controllers = PersonController.class)
 @AutoConfigureMockMvc
 public class PersonControllerTest {
 
@@ -45,32 +37,13 @@ public class PersonControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private void mockAdmin() {
-        User user = new User("admin", "password", List.of(
-                new SimpleGrantedAuthority("ROLE_ADMIN"),
-                new SimpleGrantedAuthority("ROLE_USER")
-        ));
-        given(
-                persons.findByToken("")
-        ).willReturn(Optional.of(user));
-    }
-
-    private void mockUser() {
-        User user = new User("login", "password", List.of(
-                new SimpleGrantedAuthority("ROLE_USER")
-        ));
-        given(
-                persons.findByToken("")
-        ).willReturn(Optional.of(user));
-    }
-
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void whenGetPersonsList() throws Exception {
         Person person = new Person();
         person.setId(1);
         person.setLogin("login");
         person.setPassword("password");
-        mockAdmin();
         given(
                 persons.findAll()
         ).willReturn(List.of(person));
@@ -86,12 +59,12 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenGetPersonById() throws Exception {
         Person person = new Person();
         person.setId(1);
         person.setLogin("login");
         person.setPassword("password");
-        mockUser();
         given(
                 persons.findByLogin("login")
         ).willReturn(Optional.of(person));
@@ -119,7 +92,7 @@ public class PersonControllerTest {
         given(
                 persons.save(person)
         ).willReturn(result);
-        mvc.perform(post("/create")
+        mvc.perform(post("/person/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestData))
                 .andExpect(status().isCreated())
@@ -139,7 +112,7 @@ public class PersonControllerTest {
         result.setPassword("password");
         result.setId(10);
         String request = mapper.writeValueAsString(result);
-        mvc.perform(post("/create")
+        mvc.perform(post("/person/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         .content(request))
                 .andExpect(status().isBadRequest());
@@ -149,12 +122,12 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenUpdatePerson() throws Exception {
         Person person = new Person();
         person.setId(10);
         person.setLogin("login");
         person.setPassword("password");
-        mockUser();
         String requestData = mapper.writeValueAsString(person);
         given(
                 persons.findByLogin("login")
@@ -169,11 +142,11 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void whenUpdatePersonWithWrongId() throws Exception {
         Person person = new Person();
         person.setLogin("login");
         String requestData = mapper.writeValueAsString(person);
-        mockAdmin();
         mvc.perform(put("/person/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestData))
@@ -181,8 +154,8 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "login")
     public void whenDeletePerson() throws Exception {
-        mockUser();
         mvc.perform(
                 delete("/person/login")
         ).andExpect(status().isOk());
