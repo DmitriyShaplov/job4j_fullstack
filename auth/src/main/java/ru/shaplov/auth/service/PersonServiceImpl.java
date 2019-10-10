@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shaplov.auth.domain.EnumRole;
 import ru.shaplov.auth.domain.Person;
+import ru.shaplov.auth.repository.MessageRepository;
 import ru.shaplov.auth.repository.PersonRepository;
 import ru.shaplov.auth.repository.RoleRepository;
 
@@ -25,12 +26,14 @@ public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
     private final RoleRepository roleRepository;
+    private final MessageRepository messageRepository;
     private final PasswordEncoder encoder;
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
+    public PersonServiceImpl(PersonRepository personRepository, RoleRepository roleRepository, MessageRepository messageRepository, PasswordEncoder encoder) {
         this.personRepository = personRepository;
         this.roleRepository = roleRepository;
+        this.messageRepository = messageRepository;
         this.encoder = encoder;
     }
 
@@ -57,6 +60,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(String login) {
+        messageRepository.deleteAllByPersonLogin(login);
         personRepository.deleteByLogin(login);
         LOG.info("Person {} deleted", login);
     }

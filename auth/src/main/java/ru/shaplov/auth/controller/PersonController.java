@@ -31,7 +31,7 @@ public class PersonController {
     }
 
     @GetMapping("/{login}")
-    @PreAuthorize("#login == principal.username or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("#login == authentication.name or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Person> findByLogin(@PathVariable String login) {
         var person = personService.findByLogin(login);
         return new ResponseEntity<>(
@@ -50,7 +50,7 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    @PreAuthorize("#person.login == principal.username or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("#person.login == authentication.name or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> update(@RequestBody Person person) {
         if (personService.findByLogin(person.getLogin()).isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -60,7 +60,7 @@ public class PersonController {
     }
 
     @DeleteMapping("{login}")
-    @PreAuthorize("#login == principal.username or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("#login == authentication.name or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String login) {
         this.personService.delete(login);
         return ResponseEntity.ok().build();

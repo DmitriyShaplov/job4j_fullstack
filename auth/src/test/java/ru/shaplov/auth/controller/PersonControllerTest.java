@@ -7,11 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.shaplov.auth.domain.Person;
+import ru.shaplov.auth.repository.PersonRepository;
+import ru.shaplov.auth.security.CustomUserDetailsService;
 import ru.shaplov.auth.service.PersonService;
 
 import java.util.List;
@@ -25,7 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = PersonController.class)
+@WebMvcTest(controllers = PersonController.class,  includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+        classes = {
+                CustomUserDetailsService.class
+        }))
 @AutoConfigureMockMvc
 public class PersonControllerTest {
 
@@ -34,6 +41,9 @@ public class PersonControllerTest {
 
     @MockBean
     private PersonService persons;
+
+    @MockBean
+    private PersonRepository personRepository;
 
     private ObjectMapper mapper = new ObjectMapper();
 

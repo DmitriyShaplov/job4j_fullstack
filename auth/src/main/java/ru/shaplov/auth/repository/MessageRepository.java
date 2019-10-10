@@ -13,4 +13,5 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     List<Message> findAllByRoomNameOrderByIdDesc(String roomName);
     List<Message> findAllByPersonLoginOrderByIdDesc(String personLogin);
     void deleteAllByRoomName(String roomName);
+    void deleteAllByPersonLogin(String login);
 }
