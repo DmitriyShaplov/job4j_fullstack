@@ -41,6 +41,9 @@ allprojects {
         implementation ('org.springframework.boot:spring-boot-starter-security') {
             exclude module: 'spring-boot-starter-logging'
         }
+        implementation ('org.springframework.boot:spring-boot-starter-activemq') {
+            exclude module: 'spring-boot-starter-logging'
+        }
         testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.0.RELEASE'
         testCompile group: 'org.hsqldb', name: 'hsqldb', version: '2.5.0'
     }
