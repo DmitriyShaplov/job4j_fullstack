@@ -17,4 +17,5 @@ include 'rmi_chat_client'
 include 'auth'
 include 'auth_client'
 include 'spring_jms_activemq'
+include 'websocket'
 
