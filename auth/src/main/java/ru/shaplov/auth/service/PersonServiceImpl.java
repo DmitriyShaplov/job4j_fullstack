@@ -3,16 +3,12 @@ package ru.shaplov.auth.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shaplov.auth.domain.EnumRole;
 import ru.shaplov.auth.domain.Person;
-import ru.shaplov.auth.domain.Role;
-import ru.shaplov.auth.exception.ForbiddenException;
+import ru.shaplov.auth.repository.MessageRepository;
 import ru.shaplov.auth.repository.PersonRepository;
 import ru.shaplov.auth.repository.RoleRepository;
 
@@ -30,12 +26,14 @@ public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
     private final RoleRepository roleRepository;
+    private final MessageRepository messageRepository;
     private final PasswordEncoder encoder;
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
+    public PersonServiceImpl(PersonRepository personRepository, RoleRepository roleRepository, MessageRepository messageRepository, PasswordEncoder encoder) {
         this.personRepository = personRepository;
         this.roleRepository = roleRepository;
+        this.messageRepository = messageRepository;
         this.encoder = encoder;
     }
 
@@ -62,38 +60,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(String login) {
+        messageRepository.deleteAllByPersonLogin(login);
         personRepository.deleteByLogin(login);
         LOG.info("Person {} deleted", login);
-    }
-
-    @Override
-    public String login(String login, String password) {
-        Optional<Person> optPerson = personRepository.findByLogin(login);
-        if (optPerson.isPresent()) {
-            Person person = optPerson.get();
-            if (encoder.matches(password, person.getPassword())) {
-                String token = UUID.randomUUID().toString();
-                person.setToken(token);
-                personRepository.save(person);
-                return token;
-            }
-        }
-        throw new ForbiddenException();
-    }
-
-    @Override
-    public Optional<User> findByToken(String token) {
-        Optional<Person> optionalPerson = personRepository.findByToken(token);
-        if (optionalPerson.isPresent()) {
-            Person person = optionalPerson.get();
-            User user = new User(person.getLogin(), person.getPassword(), getAuthorities(person));
-            return Optional.of(user);
-        }
-        return Optional.empty();
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthorities(Person person) {
-        String[] personRoles = person.getRoles().stream().map(Role::getName).toArray(String[]::new);
-        return AuthorityUtils.createAuthorityList(personRoles);
     }
 }

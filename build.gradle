@@ -46,5 +46,6 @@ allprojects {
         }
         testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.0.RELEASE'
         testCompile group: 'org.hsqldb', name: 'hsqldb', version: '2.5.0'
+        compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.9.RELEASE'
     }
 }

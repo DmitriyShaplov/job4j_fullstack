@@ -20,7 +20,6 @@ public class Person {
     private int id;
     private String login;
     private String password;
-    private String token;
 
     @ManyToMany
     @JoinTable(
@@ -53,10 +52,6 @@ public class Person {
         return password;
     }
 
-    public String getToken() {
-        return token;
-    }
-
     public Set<Role> getRoles() {
         return roles;
     }
@@ -77,10 +72,6 @@ public class Person {
         this.roles = roles;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,12 +79,11 @@ public class Person {
         Person person = (Person) o;
         return id == person.id &&
                 Objects.equals(login, person.login) &&
-                Objects.equals(password, person.password) &&
-                Objects.equals(token, person.token);
+                Objects.equals(password, person.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, token);
+        return Objects.hash(id, login, password);
     }
 }

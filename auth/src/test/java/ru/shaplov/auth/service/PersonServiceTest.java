@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.shaplov.auth.domain.EnumRole;
 import ru.shaplov.auth.domain.Person;
 import ru.shaplov.auth.domain.Role;
+import ru.shaplov.auth.repository.MessageRepository;
 import ru.shaplov.auth.repository.PersonRepository;
 import ru.shaplov.auth.repository.RoleRepository;
 
@@ -31,8 +32,8 @@ public class PersonServiceTest {
 
         @Bean
         @Autowired
-        public PersonService personService(PersonRepository personRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
-            return new PersonServiceImpl(personRepository, roleRepository, encoder);
+        public PersonService personService(PersonRepository personRepository, RoleRepository roleRepository, MessageRepository messageRepository, PasswordEncoder encoder) {
+            return new PersonServiceImpl(personRepository, roleRepository, messageRepository, encoder);
         }
 
         @Bean
@@ -49,6 +50,7 @@ public class PersonServiceTest {
 
     @MockBean private PersonRepository personRepository;
     @MockBean private RoleRepository roleRepository;
+    @MockBean private MessageRepository messageRepository;
 
     @Test
     public void whenSavePersonThenPasswordEncoded() {
