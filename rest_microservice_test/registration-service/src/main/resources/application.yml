@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: registration-service
+  main:
+    allow-bean-definition-overriding: true
+security:
+  oauth2:
+    client:
+      client-id: creator
+      client-secret: password
+      access-token-uri: http://localhost:8081/uaa/oauth/token
+      scope: create
+    resource:
+      user-info-uri: http://localhost:8080/uaa/user/current
+      token-info-uri: http://localhost:8080/uaa/oauth/check_token
+
+server:
+  servlet:
+    context-path: /registration
+  port: 8083
+
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  level:
+    org.springframework.web: DEBUG

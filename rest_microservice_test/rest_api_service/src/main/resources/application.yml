@@ -1,0 +1,48 @@
+#spring.datasource.initialization-mode=always
+#spring.datasource.url=jdbc:postgresql://127.0.0.1:5433/resource
+#spring.datasource.username=postgres
+#spring.datasource.password=123456
+#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL9Dialect
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+#spring.jpa.hibernate.ddl-auto=none
+#
+#spring.main.allow-bean-definition-overriding=true
+#server.port=8082
+
+spring:
+  application:
+    name: department-service
+  datasource:
+    initialization-mode: always
+    url: jdbc:postgresql://127.0.0.1:5433/resource?reWriteBatchedInserts=true
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        order_inserts: true
+        batch_versioned_data: true
+        jdbc:
+          batch-size: 20
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: none
+  main:
+    allow-bean-definition-overriding: true
+
+security:
+  oauth2:
+    resource:
+      user-info-uri: http://localhost:8080/uaa/user/current
+#      jwt:
+#        key-value: "jwtSigningKey"
+server:
+  servlet:
+    context-path: /department
+  port: 8082
