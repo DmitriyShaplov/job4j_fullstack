@@ -11,7 +11,9 @@ import ru.shaplov.auth.dto.UserRegistrationDto;
 import ru.shaplov.auth.repository.RoleRepository;
 import ru.shaplov.auth.repository.UserRepository;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shaplov
@@ -40,5 +42,13 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(this.roleRepository.findByName(EnumRole.ROLE_EMPLOYEE.name()).orElseThrow()));
         user = this.userRepository.save(user);
         return new UserDto(user.getId(), user.getUsername());
+    }
+
+    @Override
+    public List<UserDto> getUsers() {
+        return userRepository.findAll().stream().map(
+                v -> new UserDto(v.getId(), v.getUsername())
+        )
+                .collect(Collectors.toList());
     }
 }

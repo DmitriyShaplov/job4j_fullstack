@@ -1,6 +1,7 @@
 package ru.shaplov.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.shaplov.auth.dto.UserDto;
@@ -8,6 +9,7 @@ import ru.shaplov.auth.dto.UserRegistrationDto;
 import ru.shaplov.auth.service.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
 /**
  * @author shaplov
@@ -33,5 +35,11 @@ public class UserController {
     @GetMapping("/current")
     public Principal getUser(Principal principal) {
         return principal;
+    }
+
+    @GetMapping
+    @PreAuthorize("#oauth2.hasScope('create')")
+    public ResponseEntity<List<UserDto>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
     }
 }

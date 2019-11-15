@@ -39,10 +39,24 @@ spring:
 security:
   oauth2:
     resource:
-      user-info-uri: http://localhost:8080/uaa/user/current
-#      jwt:
-#        key-value: "jwtSigningKey"
+#      user-info-uri: http://localhost:8080/uaa/user/current
+      jwt:
+        key-value: "jwtSigningKey"
 server:
   servlet:
     context-path: /department
   port: 8082
+
+logging:
+  level:
+    springframework:
+      web: DEBUG
+      ws:
+        client:
+          MessageTracing:
+            sent: DEBUG
+            received: DEBUG
+        server:
+          MessageTracing:
+            sent: DEBUG
+            received: DEBUG
